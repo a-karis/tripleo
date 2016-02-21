@@ -129,9 +129,10 @@ So, in the resource_registry section, we register OS::TripleO::ComputeExtraConfi
 #### Analysis of compute-extra-config-pre-deploy.yaml
 So far, we told TripleO that it should execute our new OS::TripleO::ComputeExtraConfigPre resource. However, we need to fill this file with something useful.
 
-The only mandatory inteface for this file is the following:
+The only mandatory interface for this file is the following:
 - input: server
 - output: deploy_status_code
+- 
 We can "make up" anything else. Any new parameters should however be covered by the default_parameters in our environment file (see above).
 
 ##### parameters section
