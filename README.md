@@ -28,7 +28,10 @@ http://lists.openstack.org/pipermail/openstack-dev/2015-November/079575.html
 # Testing your templates
 #### Getting started - fast:
 Become the stack user:
+```
 su - stack
+```
+
 Create the following directories as the stack user:
 mkdir templates-nfs
 mkdir enfironment-nfs
@@ -37,9 +40,7 @@ Copy file templates-nfs/instances-nfs-mount.sh from this repository
 Copy file environment-nfs/compute-pre-deploy.yaml from this repository
 Copy any other enfironment file that you might need.
 Run openstack overcloud deploy with your modified environment and extra parameters.
-===
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-nfs/network-environment.yaml  -e /home/stack/environment-nfs/compute-pre-deploy.yaml -e /home/stack/environment-nfs/storage-environment.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
-===
 How to verify
 #### TripleO resource_registry hooks explained
 Our goal is to mount NFS share on /var/lib/nova/instances. We obviously need to do this after the baremetal machines' operating systems are installed. However, we can either do this _before_ we customize the OS (i.e. install and configure OpenStack) or _after_. In terms of TripleO, this is pre-deployment or post-deployment, and TripleO provides convenient hoops for Controllers and Compute nodes which we can use. We can mount our NFS share before or after OpenStack installation and configuration, we don't really care. So we will use the hooks which are most convenient for us.
