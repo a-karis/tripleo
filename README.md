@@ -1,2 +1,2 @@
-# tripleo
-# tripleo
+# Guide to OpenStack TripleO and Heat
+
