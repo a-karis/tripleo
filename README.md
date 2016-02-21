@@ -154,7 +154,7 @@ parameters:
 OS::Heat::SoftwareConfig instructs heat what to do. It includes a bash script "instances-nfs-mount.sh" and provides 2 arguments to this script's envirionment: _NOVA_NFS_SHARE and _NOVA_NFS_MOUNT_OPTIONS
 OS::Heat::SoftwareDeployment exectutes the SoftwareConfiguration on a specific server. actions tell Heat when to deploy (in this case, on stack CREATE and stack UPDATE). It also pulls input values from our environment file (our default_parameters) and passes them to OS::Heat::SoftwareConfig which then passes them on the our script.
 
-The group: parameter defines the type of our config: parameter. This can be script, puppet, or any other software configuration hook as listed in [5] (see link [5] above). For simplicity, we are using a bash script here.
+The group: parameter defines the type of our config: parameter. This can be script, puppet, or any other software configuration hook as listed in [5] (https://github.com/openstack/heat-templates/tree/master/hot/software-config/elements). For simplicity, we are using a bash script here.
 ```
 resources:
   NodeSpecificConfig:
