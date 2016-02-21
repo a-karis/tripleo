@@ -30,7 +30,7 @@ Once you understand Heat, you can read on about TribleO
 [10] http://lists.openstack.org/pipermail/openstack-dev/2015-November/079575.html
 
 
-## Quick start with this repository
+## Quick start with this repository (to mount instance ephemeral disks onto NFS)
 Become the stack user:
 ```
 su - stack
@@ -57,7 +57,7 @@ Run openstack overcloud deploy with your modified environment and extra paramete
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-nfs/network-environment.yaml  -e /home/stack/environment-nfs/compute-pre-deploy.yaml -e /home/stack/environment-nfs/storage-environment.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
 ```
 
-## Modifying TripleO Heat templates
+## Modifying TripleO Heat templates to mount instance ephemeral disks onto NFS
 Our goal is to mount an NFS share on /var/lib/nova/instances of each compute node. We obviously need to do this after the baremetal machines' operating systems are installed. However, we can either do this _before_ we customize the OS (i.e. install and configure OpenStack) or _after_. Also, we need to tell Heat what to do. This is done by registering resources to the Heat stack. We can mount our NFS share before or after OpenStack installation and configuration, we don't really care. So we will use whatever we find is most convenient for us.
 
 ### TripleO resource_registry hooks explained
