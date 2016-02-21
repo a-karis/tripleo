@@ -3,7 +3,7 @@
 ## Useful resources
 
 ### Heat resources
-First of all, ideally cover your bases with the following documentation. If you want to understant TripleO deployment, it is crucial to have an understanding of Heat and HOT templates.
+First of all, ideally cover all the bases by going through the following documentation. If you want to understant TripleO deployment, it is crucial to have an understanding of Heat and HOT templates.
 #### Heat orchestration (HOT) guide
 [1] http://docs.openstack.org/developer/heat/template_guide/hot_guide.html
 #### Heat resource registry
