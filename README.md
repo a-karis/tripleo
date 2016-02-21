@@ -40,7 +40,14 @@ mkdir enfironment-nfs
 Copy file templates-nfs/compute-extra-config-pre-deploy.yaml from this repository
 Copy file templates-nfs/instances-nfs-mount.sh from this repository
 Copy file environment-nfs/compute-pre-deploy.yaml from this repository
+```
+cp git-repo/templates-nfs/compute-extra-config-pre-deploy.yaml  ~/templates-nfs/compute-extra-config-pre-deploy.yaml 
+cp git-repo/templates-nfs/instances-nfs-mount.sh ~/templates-nfs/instances-nfs-mount.sh
+cp git-repo/environment-nfs/compute-pre-deploy.yaml ~/environment-nfs/compute-pre-deploy.yaml
+```
+
 Copy any other enfironment file that you might need.
+
 Run openstack overcloud deploy with your modified environment and extra parameters.
 ```
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-nfs/network-environment.yaml  -e /home/stack/environment-nfs/compute-pre-deploy.yaml -e /home/stack/environment-nfs/storage-environment.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
