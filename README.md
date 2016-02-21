@@ -1,4 +1,4 @@
-# Guide to OpenStack TripleO and Heat
+# Guide to OpenStack TripleO and Heat - mounting Nova ephemeral storage onto NFS
 
 ## Useful resources
 
@@ -151,8 +151,8 @@ parameters:
 ```
     
 ##### resources section
-OS::Heat::SoftwareConfig instructs heat what to do. It includes a bash script "instances-nfs-mount.sh" and provides 2 arguments to this script's envirionment: _NOVA_NFS_SHARE and _NOVA_NFS_MOUNT_OPTIONS
-OS::Heat::SoftwareDeployment exectutes the SoftwareConfiguration on a specific server. actions tell Heat when to deploy (in this case, on stack CREATE and stack UPDATE). It also pulls input values from our environment file (our default_parameters) and passes them to OS::Heat::SoftwareConfig which then passes them on the our script.
+OS::Heat::SoftwareConfig instructs heat what to do. It includes a bash script "instances-nfs-mount.sh" and provides 2 arguments to this script's environment: _NOVA_NFS_SHARE and _NOVA_NFS_MOUNT_OPTIONS
+OS::Heat::SoftwareDeployment exectutes the SoftwareConfiguration on a specific server. actions tell Heat when to deploy (in this case, on stack CREATE and stack UPDATE). It also pulls input values from our environment file (our default_parameters) and passes them to OS::Heat::SoftwareConfig which then passes them to our bash script.
 
 The group: parameter defines the type of our config: parameter. This can be script, puppet, or any other software configuration hook as listed in [5] (https://github.com/openstack/heat-templates/tree/master/hot/software-config/elements). For simplicity, we are using a bash script here.
 ```
@@ -203,8 +203,6 @@ This is a very basic script which persistently mounts an NFS share to /var/lib/n
 ######################################################################
 
 nova_instance_directory="/var/lib/nova/instances"
-
-echo "INPUT parameters to this script are: $_NOVA_NFS_SHARE $_NOVA_NFS_MOUNT_OPTIONS" > /tmp/test.txt
 
 delete_existing_nova_mount_fstab() {
   /bin/sed -i "\#${nova_instance_directory}#d" /etc/fstab
