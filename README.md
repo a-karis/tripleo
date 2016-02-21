@@ -5,24 +5,24 @@
 ### Heat resources
 First of all, ideally cover your bases with the following documentation. If you want to understant TripleO deployment, it is crucial to have an understanding of Heat and HOT templates.
 #### Heat orchestration (HOT) guide
-http://docs.openstack.org/developer/heat/template_guide/hot_guide.html
+[1] http://docs.openstack.org/developer/heat/template_guide/hot_guide.html
 #### Heat resource registry
-http://docs.openstack.org/developer/heat/template_guide/environment.html
+[2] http://docs.openstack.org/developer/heat/template_guide/environment.html
 #### Heat Software deployment and software config resources:
-http://docs.openstack.org/developer/heat/template_guide/software_deployment.html
-https://github.com/openstack/heat-templates/tree/master/hot/software-config/elements/heat-config-script
-http://hardysteven.blogspot.ca/2015/05/heat-softwareconfig-resources.html
+[3] http://docs.openstack.org/developer/heat/template_guide/software_deployment.html
+[4] http://hardysteven.blogspot.ca/2015/05/heat-softwareconfig-resources.html
+[5] https://github.com/openstack/heat-templates/tree/master/hot/software-config/elements
 
 ### TripleO Heat resources 
 Once you understand Heat, you can read on about TribleO
 ####TripleO Heat templates explained:
-http://hardysteven.blogspot.ca/2015/05/tripleo-heat-templates-part-1-roles-and.html
-http://hardysteven.blogspot.ca/2015/05/tripleo-heat-templates-part-2-node.html
-http://hardysteven.blogspot.ca/2015/05/tripleo-heat-templates-part-3-cluster.html
+[6] http://hardysteven.blogspot.ca/2015/05/tripleo-heat-templates-part-1-roles-and.html
+[7] http://hardysteven.blogspot.ca/2015/05/tripleo-heat-templates-part-2-node.html
+[8] http://hardysteven.blogspot.ca/2015/05/tripleo-heat-templates-part-3-cluster.html
 #### TripleO Heat debugging explained:
-http://hardysteven.blogspot.ca/2015/04/debugging-tripleo-heat-templates.html
+[9] http://hardysteven.blogspot.ca/2015/04/debugging-tripleo-heat-templates.html
 #### TripleO Heat parameters vs default_parameters explained
-http://lists.openstack.org/pipermail/openstack-dev/2015-November/079575.html
+[10] http://lists.openstack.org/pipermail/openstack-dev/2015-November/079575.html
 
 
 ## Quick start with this repository
@@ -124,6 +124,8 @@ parameters:
 ##### resources section
 OS::Heat::SoftwareConfig instructs heat what to do. It includes a bash script "instances-nfs-mount.sh" and provides 2 arguments to this script's envirionment: _NOVA_NFS_SHARE and _NOVA_NFS_MOUNT_OPTIONS
 OS::Heat::SoftwareDeployment exectutes the SoftwareConfiguration on a specific server. actions tell Heat when to deploy (in this case, on stack CREATE and stack UPDATE). It also pulls input values from our environment file (our default_parameters) and passes them to OS::Heat::SoftwareConfig which then passes them on the our script.
+
+The group: parameter defines the type of our config: parameter. This can be script, puppet, or any other software configuration hook as listed in [5] (see link [5] above). For simplicity, we are using a bash script here.
 ```
 resources:
   NodeSpecificConfig:
@@ -161,10 +163,46 @@ outputs:
     value: {get_attr: [NodeSpecificDeployment, deploy_stdout]}
 ```
 
+##### instances-nfs-mount.sh bash script
+This is a very basic script which persistently mounts an NFS share to /var/lib/nova/instances. If the same share is mounted by all Compute hosts, this will allow live migration and other advanced features.
+```
+#!/bin/bash
+######################################################################
+#
+# This script (re)mounts an NFS share to /var/lib/nova/instances
+#
+######################################################################
 
+nova_instance_directory="/var/lib/nova/instances"
+
+echo "INPUT parameters to this script are: $_NOVA_NFS_SHARE $_NOVA_NFS_MOUNT_OPTIONS" > /tmp/test.txt
+
+delete_existing_nova_mount_fstab() {
+  /bin/sed -i "\#${nova_instance_directory}#d" /etc/fstab
+}
+
+create_nova_mount_fstab() {
+  /bin/echo "$_NOVA_NFS_SHARE $nova_instance_directory nfs $_NOVA_NFS_MOUNT_OPTIONS 0 0" >> /etc/fstab
+}
+
+# we are in predeployment, so this directory might not yet exist
+if [ ! -d $nova_instance_directory ];then
+  /bin/mkdir -p $nova_instance_directory
+fi
+# delete any existing mounts from fstab (e.g., in case of a stack update)
+delete_existing_nova_mount_fstab
+# create a new mount lin in fstab
+create_nova_mount_fstab
+# (re)mount /var/lib/nova/instances
+if `/bin/mount | /bin/grep -q "$nova_instance_directory"`;then
+  /bin/mount $nova_instance_directory -o remount
+else
+  /bin/mount $nova_instance_directory
+fi
+```
 
 #### Redeploying your modifications
-Now, depending on your lab environment, it might take a very long time to boot an environment and get to the pre or post deployment stages. However, Heat is smart - simply run your "openstack overcloud deploy" command once again and Heat fill figure out the rest for you without reinstalling all nodes. It will simply try to update them!
+Now, depending on your lab environment, it might take a very long time to boot an environment and get to the pre or post deployment stages. However, Heat is smart - simply run your "openstack overcloud deploy" command once again and Heat will figure out the rest for you without reinstalling all nodes. It will simply try to update them (i.e. it will go through the pre- and post-deployment phases again).
 
 ```
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-nfs/network-environment.yaml  -e /home/stack/environment-nfs/compute-pre-deploy.yaml -e /home/stack/environment-nfs/storage-environment.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
