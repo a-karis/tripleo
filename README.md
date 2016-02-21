@@ -10,15 +10,20 @@ First of all, ideally cover your bases with the following documentation. If you 
 [2] http://docs.openstack.org/developer/heat/template_guide/environment.html
 #### Heat Software deployment and software config resources:
 [3] http://docs.openstack.org/developer/heat/template_guide/software_deployment.html
+
 [4] http://hardysteven.blogspot.ca/2015/05/heat-softwareconfig-resources.html
+
 [5] https://github.com/openstack/heat-templates/tree/master/hot/software-config/elements
 
 ### TripleO Heat resources 
 Once you understand Heat, you can read on about TribleO
 ####TripleO Heat templates explained:
 [6] http://hardysteven.blogspot.ca/2015/05/tripleo-heat-templates-part-1-roles-and.html
+
 [7] http://hardysteven.blogspot.ca/2015/05/tripleo-heat-templates-part-2-node.html
+
 [8] http://hardysteven.blogspot.ca/2015/05/tripleo-heat-templates-part-3-cluster.html
+
 #### TripleO Heat debugging explained:
 [9] http://hardysteven.blogspot.ca/2015/04/debugging-tripleo-heat-templates.html
 #### TripleO Heat parameters vs default_parameters explained
