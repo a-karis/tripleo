@@ -135,6 +135,8 @@ The only mandatory interface for this file is the following:
 
 We can "make up" anything else. Any new parameters should however be covered by the default_parameters in our environment file (see above).
 
+The following lists the contents of compute-extra-config-pre-deploy.yaml:
+
 ##### parameters section
 Define mandatory server name. Specify new parameters for our nfs share.
 ```
