@@ -25,8 +25,7 @@ http://hardysteven.blogspot.ca/2015/04/debugging-tripleo-heat-templates.html
 http://lists.openstack.org/pipermail/openstack-dev/2015-November/079575.html
 
 
-# Testing your templates
-#### Getting started - fast:
+## Quick start with this repository
 Become the stack user:
 ```
 su - stack
@@ -46,18 +45,21 @@ cp git-repo/templates-nfs/instances-nfs-mount.sh ~/templates-nfs/instances-nfs-m
 cp git-repo/environment-nfs/compute-pre-deploy.yaml ~/environment-nfs/compute-pre-deploy.yaml
 ```
 
-Copy any other enfironment file that you might need.
+Copy any other environment file that you might need.
 
 Run openstack overcloud deploy with your modified environment and extra parameters.
 ```
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-nfs/network-environment.yaml  -e /home/stack/environment-nfs/compute-pre-deploy.yaml -e /home/stack/environment-nfs/storage-environment.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
 ```
-How to verify
-#### TripleO resource_registry hooks explained
-Our goal is to mount NFS share on /var/lib/nova/instances. We obviously need to do this after the baremetal machines' operating systems are installed. However, we can either do this _before_ we customize the OS (i.e. install and configure OpenStack) or _after_. In terms of TripleO, this is pre-deployment or post-deployment, and TripleO provides convenient hoops for Controllers and Compute nodes which we can use. We can mount our NFS share before or after OpenStack installation and configuration, we don't really care. So we will use the hooks which are most convenient for us.
 
-##### Discover available hooks
-We are interested in the main resource registry of TripleO for Puppet:
+## Modifying TripleO Heat templates
+Our goal is to mount an NFS share on /var/lib/nova/instances of each compute node. We obviously need to do this after the baremetal machines' operating systems are installed. However, we can either do this _before_ we customize the OS (i.e. install and configure OpenStack) or _after_. Also, we need to tell Heat what to do. This is done by registering resources to the Heat stack. We can mount our NFS share before or after OpenStack installation and configuration, we don't really care. So we will use whatever we find is most convenient for us.
+
+### TripleO resource_registry hooks explained
+In terms of TripleO, anything that happens after OS installation but before Openstack configuration is called pre-deployment. Anything that happens after Openstack was configured is called post-deployment. TripleO provides convenient hooks for Controllers and Compute nodes which we can use: by default, TripleO executes several Heat resources which do nothing. Their sole purpose is for us to replace them with something useful. These hooks are in the form of "blank" default templates which TripleO includes. In order to override these hooks, we simply need to override the resource_registry for the given resource. We can then point the resource to a useful template. We do this in an environment file.
+
+#### Discover available hooks
+First, we need to discover available hooks which we might use. In order to discover these hooks, we are interested in the main resource registry of TripleO for Puppet:
 ```
 /usr/share/openstack-tripleo-heat-templates/overcloud-resource-registry-puppet.yaml
 ```
@@ -80,11 +82,12 @@ This file contains some predefined hooks that we can use. This way, we do not ne
 So there already is a hook for compute nodes in the pre deployment stage. Also, there are some example scripts in puppet/extraconfig/pre_deploy/
 Now, by default, OS::TripleO::ControllerExtraConfigPre is registered to default.yaml, a script which does absolutely nothing. 
 
-##### Overwrite Compute pre-deployment hook
+#### Overwrite Compute pre-deployment hook
 By default, OS::TripleO::ControllerExtraConfigPre is registered to default.yaml. This Heat resource does nothing and is simply a placeholder for our hooks. If we register a resource which actually does something to this hook, we can execute actions at the pre-deployment stage on all compute hosts. 
 
 In comes our environment file to deploy our modifications!
 
+```
 [stack@poc-undercloud ~]$ cat environment-nfs/compute-pre-deploy.yaml 
 # Overwrite original ComputeExtraConfigPre with custom resource to allow NFS mounts
 resource_registry:
@@ -93,11 +96,20 @@ resource_registry:
 parameter_defaults:
   nova_nfs_share: '198.18.53.10:/export/nova'
   nova_nfs_mount_options: 'rw,sync'
+```
 
 So, in the resource_registry section, we register OS::TripleO::ComputeExtraConfigPre to our compute-extra-config-pre-deploy.yaml resource. Also, we provide some "parameter_defaults". We are using parameter_defaults because these have global scope. "parameters" on the other side have only scope at the very top-level. They need to be passed down the entire stack. So, if we wanted to pass real parameters to our hook, we would need to modify all scripts along the inclusion tree from the very top overcloud-without-merge-py.yaml all the way down to our PreDeploy hook. This is inconvenient, and so TripleO uses this little parameter_defaults "hack" to make our life easier.
 
-##### Analysis of compute-extra-config-pre-deploy.yaml
-###### parameters section
+#### Analysis of compute-extra-config-pre-deploy.yaml
+So far, we told TripleO that it should execute our new OS::TripleO::ComputeExtraConfigPre resource. However, we need to fill this file with something useful.
+
+The only mandatory inteface for this file is the following:
+- input: server
+- output: deploy_status_code
+We can "make up" anything else. Any new parameters should however be covered by the default_parameters in our environment file (see above).
+
+##### parameters section
+Define mandatory server name. Specify new parameters for our nfs share.
 ```
 parameters:
   server:
@@ -109,7 +121,9 @@ parameters:
     type: string
 ```
     
-###### resources section
+##### resources section
+OS::Heat::SoftwareConfig instructs heat what to do. It includes a bash script "instances-nfs-mount.sh" and provides 2 arguments to this script's envirionment: _NOVA_NFS_SHARE and _NOVA_NFS_MOUNT_OPTIONS
+OS::Heat::SoftwareDeployment exectutes the SoftwareConfiguration on a specific server. actions tell Heat when to deploy (in this case, on stack CREATE and stack UPDATE). It also pulls input values from our environment file (our default_parameters) and passes them to OS::Heat::SoftwareConfig which then passes them on the our script.
 ```
 resources:
   NodeSpecificConfig:
@@ -132,7 +146,8 @@ resources:
         _NOVA_NFS_MOUNT_OPTIONS: {get_param: nova_nfs_mount_options}
 ```
 
-###### outputs section
+##### outputs section
+Here, we can add some verbosity for debugging purposes. The only output which Heat absolutely needs is deploy_status_code. If the status code returns an error, overcloud deployment will wail at this stage.
 ```
 outputs:
   deploy_status_code:
