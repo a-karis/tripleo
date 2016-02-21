@@ -93,7 +93,7 @@ But when does TripleO use this resource?
 /usr/share/openstack-tripleo-heat-templates/overcloud-resource-registry-puppet.yaml:  OS::TripleO::ComputeExtraConfigPre: puppet/extraconfig/pre_deploy/default.yaml
 /usr/share/openstack-tripleo-heat-templates/puppet/compute-puppet.yaml:    type: OS::TripleO::ComputeExtraConfigPre
 ```
-So this resource is created in the compute-puppet.yaml file. This file actually tells puppet how to deploy our Compute nodes ...
+So TripleO uses this resourc in the compute-puppet.yaml file. This file actually tells puppet how to deploy/configure our Compute nodes ...
 ```
 [stack@poc-undercloud openstack-tripleo-heat-templates]$ grep compute-puppet.yaml /usr/share/openstack-tripleo-heat-templates/overcloud-resource-registry-puppet.yaml 
   OS::TripleO::Compute: puppet/compute-puppet.yaml
