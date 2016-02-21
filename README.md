@@ -100,7 +100,7 @@ parameters:
     type: string
   nova_nfs_mount_options:
     type: string
-    ```
+```
     
 ###### resources section
 ```
@@ -123,7 +123,7 @@ resources:
       input_values:
         _NOVA_NFS_SHARE: {get_param: nova_nfs_share}
         _NOVA_NFS_MOUNT_OPTIONS: {get_param: nova_nfs_mount_options}
-        ```
+```
 
 ###### outputs section
 ```
@@ -137,7 +137,7 @@ outputs:
   deploy_stdout:
     description: Captured stdout from the configuration execution
     value: {get_attr: [NodeSpecificDeployment, deploy_stdout]}
-    ```
+```
 
 
 
