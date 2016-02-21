@@ -86,6 +86,27 @@ This file contains some predefined hooks that we can use. This way, we do not ne
 
 So there already is a hook for compute nodes in the pre deployment stage. Also, there are some example scripts in puppet/extraconfig/pre_deploy/
 Now, by default, OS::TripleO::ControllerExtraConfigPre is registered to default.yaml, a script which does absolutely nothing. 
+But when does TripleO use this resource? 
+```
+[stack@poc-undercloud openstack-tripleo-heat-templates]$ grep OS::TripleO::ComputeExtraConfigPre /usr/share/openstack-tripleo-heat-templates -R
+/usr/share/openstack-tripleo-heat-templates/environments/cisco-n1kv-config.yaml:  OS::TripleO::ComputeExtraConfigPre: ../puppet/extraconfig/pre_deploy/controller/cisco-n1kv.yaml
+/usr/share/openstack-tripleo-heat-templates/overcloud-resource-registry-puppet.yaml:  OS::TripleO::ComputeExtraConfigPre: puppet/extraconfig/pre_deploy/default.yaml
+/usr/share/openstack-tripleo-heat-templates/puppet/compute-puppet.yaml:    type: OS::TripleO::ComputeExtraConfigPre
+```
+So this resource is created in the compute-puppet.yaml file. This file actually tells puppet how to deploy our Compute nodes ...
+```
+[stack@poc-undercloud openstack-tripleo-heat-templates]$ grep compute-puppet.yaml /usr/share/openstack-tripleo-heat-templates/overcloud-resource-registry-puppet.yaml 
+  OS::TripleO::Compute: puppet/compute-puppet.yaml
+```
+... and the only mandatory parameter is the "server" property.
+```
+  # Hook for site-specific additional pre-deployment config, e.g extra hieradata
+  ComputeExtraConfigPre:
+    depends_on: NovaComputeDeployment
+    type: OS::TripleO::ComputeExtraConfigPre
+    properties:
+        server: {get_resource: NovaCompute}
+```
 
 #### Overwrite Compute pre-deployment hook
 By default, OS::TripleO::ControllerExtraConfigPre is registered to default.yaml. This Heat resource does nothing and is simply a placeholder for our hooks. If we register a resource which actually does something to this hook, we can execute actions at the pre-deployment stage on all compute hosts. 
