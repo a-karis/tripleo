@@ -132,7 +132,7 @@ So far, we told TripleO that it should execute our new OS::TripleO::ComputeExtra
 The only mandatory interface for this file is the following:
 - input: server
 - output: deploy_status_code
-- 
+
 We can "make up" anything else. Any new parameters should however be covered by the default_parameters in our environment file (see above).
 
 ##### parameters section
