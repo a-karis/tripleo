@@ -26,10 +26,37 @@ http://lists.openstack.org/pipermail/openstack-dev/2015-November/079575.html
 
 
 # Testing your templates
-#### Deploying your modified stack
+#### Getting started - fast:
+Become the stack user:
+su - stack
+Create the following directories as the stack user:
+mkdir templates-nfs
+mkdir enfironment-nfs
+Copy file templates-nfs/compute-extra-config-pre-deploy.yaml from this repository
+Copy file templates-nfs/instances-nfs-mount.sh from this repository
+Copy file environment-nfs/compute-pre-deploy.yaml from this repository
+Copy any other enfironment file that you might need.
 Run openstack overcloud deploy with your modified environment and extra parameters.
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-nfs/network-environment.yaml  -e /home/stack/environment-nfs/compute-pre-deploy.yaml -e /home/stack/environment-nfs/storage-environment.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
 How to verify
+#### TripleO resource_registry hooks explained
+Let's only focus on the compute-pre-deploy environment. Our goal is to mount NFS share on /var/lib/nova/instances. We obviously need to do this after the baremetal machines' operating systems are installed. However, we can either do this _before_ we customize the OS (i.e. install and configure OpenStack) or _after_. In terms of TripleO, this is pre-deployment or post-deployment. We can mount our NFS share before or after OpenStack installation and configuration, we don't really care. So we will use the resources which are most convenient for us.
+
+We are interested in the main resource registry of TripleO for Puppet:
+/usr/share/openstack-tripleo-heat-templates/overcloud-resource-registry-puppet.yaml
+This file contains some predefined hooks that we can use. This way, we do not need to modify any of the existing Heat scripts. 
+[stack@poc-undercloud ~]$ grep -A10 'Hooks for operator' /usr/share/openstack-tripleo-heat-templates/overcloud-resource-registry-puppet.yaml
+  # Hooks for operator extra config
+  # NodeUserData == Cloud-init additional user-data, e.g cloud-config
+  # ControllerExtraConfigPre == Controller configuration pre service deployment
+  # NodeExtraConfig == All nodes configuration pre service deployment
+  # NodeExtraConfigPost == All nodes configuration post service deployment
+  OS::TripleO::NodeUserData: firstboot/userdata_default.yaml
+  OS::TripleO::ControllerExtraConfigPre: puppet/extraconfig/pre_deploy/default.yaml
+  OS::TripleO::ComputeExtraConfigPre: puppet/extraconfig/pre_deploy/default.yaml
+  OS::TripleO::NodeExtraConfig: puppet/extraconfig/pre_deploy/default.yaml
+  OS::TripleO::NodeExtraConfigPost: extraconfig/post_deploy/default.yaml
+
 
 #### Redeploying your modifications
 Now, depending on your lab environment, it might take a very long time to boot an environment and get to the pre or post deployment stages. However, Heat is smart - simply run your "openstack overcloud deploy" command once again and Heat fill figure out the rest for you without reinstalling all nodes. It will simply try to update them!
