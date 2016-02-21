@@ -25,3 +25,23 @@ http://hardysteven.blogspot.ca/2015/04/debugging-tripleo-heat-templates.html
 http://lists.openstack.org/pipermail/openstack-dev/2015-November/079575.html
 
 
+# Testing your templates
+#### Deploying your modified stack
+Run openstack overcloud deploy with your modified environment and extra parameters.
+openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-nfs/network-environment.yaml  -e /home/stack/environment-nfs/compute-pre-deploy.yaml -e /home/stack/environment-nfs/storage-environment.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
+How to verify
+
+#### Redeploying your modifications
+Now, depending on your lab environment, it might take a very long time to boot an environment and get to the pre or post deployment stages. However, Heat is smart - simply run your "openstack overcloud deploy" command once again and Heat fill figure out the rest for you without reinstalling all nodes. It will simply try to update them!
+
+openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-nfs/network-environment.yaml  -e /home/stack/environment-nfs/compute-pre-deploy.yaml -e /home/stack/environment-nfs/storage-environment.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
+
+How to verify: run the same commands as above. Check the time stamp - once heat gets back to your resource, the time stamp should update and reflect the current time.
+
+[stack@poc-undercloud ~]$ cat header.txt;heat resource-list overcloud -n5 | grep ComputeExt
++-------------------------------------------+-----------------------------------------------+---------------------------------------------------+--------------------+----------------------+
+| resource_name                             | physical_resource_id                          | resource_type                                     | resource_status    | updated_time         |
++-------------------------------------------+-----------------------------------------------+---------------------------------------------------+--------------------+----------------------+
+| ComputeExtraConfigPre                         | 4cb24dc9-e658-421c-a702-e50a53672a31          | OS::TripleO::ComputeExtraConfigPre                | UPDATE_COMPLETE    | 2016-02-21T18:32:10Z | 0                                             |
+| NodeSpecificConfig                            | f9dee8bd-1be0-48e9-944d-439c4c1f999e          | OS::Heat::SoftwareConfig                          | CREATE_COMPLETE    | 2016-02-21T18:32:56Z | ComputeExtraConfigPre                         |
+| NodeSpecificDeployment                        | bfbf1868-faeb-4d18-9a70-f5185f22f30d          | OS::Heat::SoftwareDeployment                      | UPDATE_COMPLETE    | 2016-02-21T18:33:02Z | ComputeExtraConfigPre
