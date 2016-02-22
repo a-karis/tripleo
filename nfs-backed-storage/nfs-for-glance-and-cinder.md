@@ -1,6 +1,6 @@
 # Using NFS storage for Glance images and for Cinder volumes
 By default, TripleO only covers backing Glance and Cinder with NFS. 
-In order to configura NFS backed Nova ephemeral storage, we will need to use pre-deployment hooks.
+In order to configure NFS backed Nova ephemeral storage, we will need to use pre-deployment hooks.
 This document therefore only covers Glance and Cinder.
 
 ## Resources
