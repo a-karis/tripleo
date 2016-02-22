@@ -26,6 +26,7 @@ Continue following the TripleO instructions for deploying an overcloud. Before e
 ```
 openstack overcloud deploy --templates -e ~/cinder-netapp-config.yaml
 ```
+### Full deploy command
 ```
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-netapp/network-environment.yaml -e /home/stack/environment-netapp/cinder-netapp-config.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
 ```
