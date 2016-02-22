@@ -209,6 +209,7 @@ resources:
 
 ### Comparing .../controller/cinder-netapp.yaml, environments/cinder-netapp-config.yaml and cinder.conf output side by side
 It might help to compare the above configuration of cinder-netapp.yaml with our parameter_defaults and the resulting cinder.conf
+
 environments/cinder-netapp-config.yaml :
 ```
 parameter_defaults:
