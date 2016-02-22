@@ -34,10 +34,54 @@ Wait for the completion of the overcloud deployment process.
 ### Resulting cinder.conf
 (...)
 
-## Configuration of NetApp cinder backend (alongside Cinder NFS configuration)
+## Configuration of NetApp cinder backend (alongside Cinder NFS configuration, Nova NFS backend, Glance NFS backend)
 ### Instructions
 - Repeat the above instructions for the NetApp backend driver.
 - Repeat all instructions for nova, glance and cinder storage.
+- Run openstack overcloud deploy with all environment files:
+```
+openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-netapp/network-environment.yaml  -e /home/stack/environment-netapp/compute-pre-deploy.yaml -e /home/stack/environment-netapp/storage-environment.yaml -e /home/stack/environment-netapp/cinder-netapp-config.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
+```
+
+## Configuration of NetApp cinder backend (without Cinder NFS configuration, with Nova NFS backend, with Glance NFS backend)
+### Instructions
+- Repeat the above instructions for the NetApp backend driver.
+- Repeat all instructions for nova, glance and cinder storage.
+- Modify storage-environment.yaml
+```
+## A Heat environment file which can be used to set up storage
+## backends. Defaults to Ceph used as a backend for Cinder, Glance and
+## Nova ephemeral storage.
+parameters:
+  #### BACKEND SELECTION ####
+  ## Whether to enable iscsi backend for Cinder.
+  CinderEnableIscsiBackend: false
+  ## Whether to enable rbd (Ceph) backend for Cinder.
+  CinderEnableRbdBackend: false
+  ## Whether to enable NFS backend for Cinder.
+  CinderEnableNfsBackend: false
+  ## Whether to enable rbd (Ceph) backend for Nova ephemeral storage.
+  NovaEnableRbdBackend: false
+  ## Glance backend can be either 'rbd' (Ceph), 'swift' or 'file'.
+  GlanceBackend: file
+
+  #### CINDER NFS SETTINGS ####
+  ## NFS mount options
+  CinderNfsMountOptions: 'rw,sync'
+  ## NFS mount point, e.g. '192.168.122.1:/export/cinder'
+  CinderNfsServers: '198.18.53.10:/export/cinder'
+
+  #### GLANCE FILE BACKEND PACEMAKER SETTINGS (used for mounting NFS) ####
+  ## Whether to make Glance 'file' backend a mount managed by Pacemaker
+  GlanceFilePcmkManage: true
+  ## File system type of the mount
+  GlanceFilePcmkFstype: nfs
+  ## Pacemaker mount point, e.g. '192.168.122.1:/export/glance' for NFS
+  GlanceFilePcmkDevice: '198.18.53.10:/export/glance'
+  ## Options for the mount managed by Pacemaker
+  GlanceFilePcmkOptions: 'rw,sync,context=system_u:object_r:glance_var_lib_t:s0'
+
+```
 - Run openstack overcloud deploy with all environment files:
 ```
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-netapp/network-environment.yaml  -e /home/stack/environment-netapp/compute-pre-deploy.yaml -e /home/stack/environment-netapp/storage-environment.yaml -e /home/stack/environment-netapp/cinder-netapp-config.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
