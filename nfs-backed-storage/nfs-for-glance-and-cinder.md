@@ -95,7 +95,7 @@ Controller nodes will mount the NFS share on /var/lib/glance/images
 ```
 
 ```
-cat /etc/cinder/cinder.conf
+[root@overcloud-controller-0 ~]# cat /etc/cinder/cinder.conf
 (...)
 enabled_backends=(...),tripleo_nfs
 (...)
