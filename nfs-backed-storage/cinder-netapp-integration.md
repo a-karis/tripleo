@@ -207,7 +207,7 @@ openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-temp
 
 ## How it works
 ### environments/cinder-netapp-config.yaml
-This file registers /usr/share/openstack-tripleo-heat-templates/puppet/extraconfig/pre_deploy/controller/cinder-netapp.yaml tp OS::TripleO::ControllerExtraConfigPre - this means that is makes use of the Controller pre-deployment hook. It then condifures several parameter_defaults with global scope so that the ControllerExtraConfigPre resource can use them. 
+This file registers /usr/share/openstack-tripleo-heat-templates/puppet/extraconfig/pre_deploy/controller/cinder-netapp.yaml to OS::TripleO::ControllerExtraConfigPre - this means that is makes use of the Controller pre-deployment hook. It then condifures several parameter_defaults with global scope so that the ControllerExtraConfigPre resource can use them. 
 ```
 # A Heat environment file which can be used to enable a
 # a Cinder NetApp backend, configured via puppet
