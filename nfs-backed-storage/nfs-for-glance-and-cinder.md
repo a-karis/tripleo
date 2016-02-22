@@ -5,7 +5,8 @@ This document therefore only covers Glance and Cinder.
 
 ## Resources
 The following resource contains generic instructions for the configuration of an environment file.
-https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux_OpenStack_Platform/7/html/Director_Installation_and_Usage/sect-Scenario_2_Using_the_CLI_to_Create_a_Basic_Overcloud.html#sect-Configuring_NFS_Storage
+
+[1] https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux_OpenStack_Platform/7/html/Director_Installation_and_Usage/sect-Scenario_2_Using_the_CLI_to_Create_a_Basic_Overcloud.html#sect-Configuring_NFS_Storage
 
 ## Find useful default parameters (which we might overwrite in an environment file)
 /usr/share/openstack-tripleo-heat-templates/overcloud-without-mergepy.yaml is the entry point into the TripleO Heat stack.
