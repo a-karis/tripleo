@@ -34,7 +34,7 @@ Wait for the completion of the overcloud deployment process.
 ### Resulting cinder.conf
 (...)
 
-## Configuration of NetApp cinder backend (alongside Cinder NFS configuration, Nova NFS backend, Glance NFS backend)
+## Configuration of NetApp cinder backend (with additional Cinder NFS backend, with Nova NFS backend, with Glance NFS backend)
 ### Instructions
 - Repeat the above instructions for the NetApp backend driver.
 - Repeat all instructions for nova, glance and cinder storage.
@@ -43,7 +43,7 @@ Wait for the completion of the overcloud deployment process.
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-netapp/network-environment.yaml  -e /home/stack/environment-netapp/compute-pre-deploy.yaml -e /home/stack/environment-netapp/storage-environment.yaml -e /home/stack/environment-netapp/cinder-netapp-config.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
 ```
 
-## Configuration of NetApp cinder backend (without Cinder NFS configuration, with Nova NFS backend, with Glance NFS backend)
+## Configuration of NetApp cinder backend (without additional Cinder NFS backend, with Nova NFS backend, with Glance NFS backend)
 ### Instructions
 - Repeat the above instructions for the NetApp backend driver.
 - Repeat all instructions for nova, glance and cinder storage.
