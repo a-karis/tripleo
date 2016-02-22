@@ -99,10 +99,57 @@ openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-temp
 ### Resulting cinder.conf
 ```
 (...)
+enabled_backends=tripleo_netapp,tripleo_nfs
+(...)
+[tripleo_netapp]
+netapp_login=
+netapp_vfiler=
+netapp_password=
+nfs_shares_config=/etc/cinder/shares.conf
+netapp_storage_pools=
+host=hostgroup
+netapp_sa_password=
+netapp_server_hostname=
+netapp_size_multiplier=1.2
+thres_avl_size_perc_stop=60
+netapp_storage_protocol=nfs
+netapp_webservice_path=/devmgr/v2
+volume_driver=cinder.volume.drivers.netapp.common.NetAppDriver
+netapp_controller_ips=
+netapp_volume_list=
+netapp_storage_family=ontap_cluster
+expiry_thres_minutes=720
+netapp_server_port=80
+netapp_partner_backend_name=
+netapp_eseries_host_type=linux_dm_mp
+thres_avl_size_perc_start=20
+volume_backend_name=tripleo_netapp
+netapp_copyoffload_tool_path=
+netapp_transport_type=http
+netapp_vserver=
+
+[tripleo_nfs]
+nfs_oversub_ratio=1.0
+volume_driver=cinder.volume.drivers.nfs.NfsDriver
+nfs_used_ratio=0.95
+nfs_shares_config=/etc/cinder/shares-nfs.conf
+nfs_mount_options=rw,sync
+volume_backend_name=tripleo_nfs
+```
+### /etc/cinder/shares-nfs.conf
+```
+198.18.53.10:/export/cinder
 ```
 ### cinder service-list
 ```
-(...)
+[stack@poc-undercloud ~]$ cinder service-list
++------------------+------------------------------------------------+------+---------+-------+----------------------------+-----------------+
+|      Binary      |                      Host                      | Zone |  Status | State |         Updated_at         | Disabled Reason |
++------------------+------------------------------------------------+------+---------+-------+----------------------------+-----------------+
+| cinder-scheduler |       overcloud-controller-0.localdomain       | nova | enabled |   up  | 2016-02-22T06:12:25.000000 |        -        |
+|  cinder-volume   |            hostgroup@tripleo_netapp            | nova | enabled |   up  | 2016-02-22T06:12:25.000000 |        -        |
+|  cinder-volume   | overcloud-controller-0.localdomain@tripleo_nfs | nova | enabled |   up  | 2016-02-22T06:12:25.000000 |        -        |
++------------------+------------------------------------------------+------+---------+-------+----------------------------+-----------------+
 ```
 
 ## Configuration of NetApp cinder backend (without additional Cinder NFS backend, with Nova NFS backend, with Glance NFS backend)
@@ -151,11 +198,11 @@ openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-temp
 
 ### Resulting cinder.conf
 ```
-(...)
+(...) results should be as above without NFS backend configuration (...)
 ```
 ### cinder service-list
 ```
-(...)
+(...) results should be as above without NFS backend (...)
 ```
 
 ## How it works
