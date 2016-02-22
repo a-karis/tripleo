@@ -39,7 +39,7 @@ parameters:
   ## Whether to enable rbd (Ceph) backend for Cinder.
   CinderEnableRbdBackend: false
   ## Whether to enable NFS backend for Cinder.
-  # CinderEnableNfsBackend: false
+  CinderEnableNfsBackend: true
   ## Whether to enable rbd (Ceph) backend for Nova ephemeral storage.
   NovaEnableRbdBackend: false
   ## Glance backend can be either 'rbd' (Ceph), 'swift' or 'file'.
