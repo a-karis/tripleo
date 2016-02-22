@@ -1,0 +1,47 @@
+heat_template_version: 2014-10-16
+
+description: >
+  Mount NFS share to /var/lib/nova/images before installing OpenStack on compute node
+
+# Note extra parameters can be defined, then passed data via the
+# environment parameter_defaults, without modifying the parent template
+parameters:
+  server:
+    type: string
+  # Config specific parameters, to be provided via parameter_defaults
+  nova_nfs_share:
+    type: string
+  nova_nfs_mount_options:
+    type: string
+
+resources:
+  NodeSpecificConfig:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      inputs:
+      - name: _NOVA_NFS_SHARE
+      - name: _NOVA_NFS_MOUNT_OPTIONS
+      config: 
+        get_file: instances-nfs-mount.sh
+  NodeSpecificDeployment:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      config: {get_resource: NodeSpecificConfig}
+      actions: ['CREATE','UPDATE'] # Only do this on CREATE
+      server: {get_param: server}
+      input_values:
+        _NOVA_NFS_SHARE: {get_param: nova_nfs_share}
+        _NOVA_NFS_MOUNT_OPTIONS: {get_param: nova_nfs_mount_options}
+
+outputs:
+  deploy_status_code:
+    description: Returned status code from the configuration execution
+    value: {get_attr: [NodeSpecificDeployment, deploy_status_code]}
+  deploy_stderr:
+    description: Captured stderr from the configuration execution
+    value: {get_attr: [NodeSpecificDeployment, deploy_stderr]}
+  deploy_stdout:
+    description: Captured stdout from the configuration execution
+    value: {get_attr: [NodeSpecificDeployment, deploy_stdout]}
+
