@@ -73,3 +73,7 @@ Controller nodes will mount the NFS share on /var/lib/glance/images
 [root@overcloud-controller-0 ~]# mount | grep glance
 198.18.53.10:/export/glance on /var/lib/glance/images type nfs4 (rw,relatime,sync,context=system_u:object_r:glance_var_lib_t:s0,vers=4.0,rsize=524288,wsize=524288,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=sys,clientaddr=198.18.53.34,local_lock=none,addr=198.18.53.10)
 ```
+```
+[root@overcloud-controller-0 ~]# mount | grep cinder
+198.18.53.10:/export/cinder on /var/lib/cinder/mnt/88057c09b2069b5354c25aa2a529a3c6 type nfs4 (rw,relatime,sync,vers=4.1,rsize=524288,wsize=524288,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=sys,clientaddr=198.18.53.30,local_lock=none,addr=198.18.53.10)
+```
