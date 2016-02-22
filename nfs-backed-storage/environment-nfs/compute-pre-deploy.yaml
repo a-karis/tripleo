@@ -1,0 +1,7 @@
+# Overwrite original ComputeExtraConfigPre with custom resource to allow NFS mounts
+resource_registry:
+  OS::TripleO::ComputeExtraConfigPre: /home/stack/templates-nfs/compute-extra-config-pre-deploy.yaml
+# parameter_defaults have global scope, so we can easily provide them to compute-extra-config-pre-deploy.yaml
+parameter_defaults:
+  nova_nfs_share: '198.18.53.10:/export/nova'
+  nova_nfs_mount_options: 'rw,sync'
