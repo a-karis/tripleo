@@ -207,3 +207,62 @@ resources:
                 cinder::backend::netapp::netapp_webservice_path: {get_input: NetappWebservicePath}
 ```
 
+### Comparing .../controller/cinder-netapp.yaml, environments/cinder-netapp-config.yaml and cinder.conf output side by side
+It might help to compare the above configuration of cinder-netapp.yaml with our parameter_defaults and the resulting cinder.conf
+environments/cinder-netapp-config.yaml :
+```
+parameter_defaults:
+  CinderEnableNetappBackend: true
+  CinderNetappBackendName: 'tripleo_netapp'
+  CinderNetappLogin: ''
+  CinderNetappPassword: ''
+  CinderNetappServerHostname: ''
+  CinderNetappServerPort: '80'
+  CinderNetappSizeMultiplier: '1.2'
+  CinderNetappStorageFamily: 'ontap_cluster'
+  CinderNetappStorageProtocol: 'nfs'
+  CinderNetappTransportType: 'http'
+  CinderNetappVfiler: ''
+  CinderNetappVolumeList: ''
+  CinderNetappVserver: ''
+  CinderNetappPartnerBackendName: ''
+  CinderNetappNfsShares: ''
+  CinderNetappNfsSharesConfig: '/etc/cinder/shares.conf'
+  CinderNetappNfsMountOptions: ''
+  CinderNetappCopyOffloadToolPath: ''
+  CinderNetappControllerIps: ''
+  CinderNetappSaPassword: ''
+  CinderNetappStoragePools: ''
+  CinderNetappEseriesHostType: 'linux_dm_mp'
+  CinderNetappWebservicePath: '/devmgr/v2'
+```
+cinder.conf:
+```
+[tripleo_netapp]
+netapp_login=
+netapp_vfiler=
+netapp_password=
+nfs_shares_config=/etc/cinder/shares.conf
+netapp_storage_pools=
+host=hostgroup
+netapp_sa_password=
+netapp_server_hostname=
+netapp_size_multiplier=1.2
+thres_avl_size_perc_stop=60
+netapp_storage_protocol=nfs
+netapp_webservice_path=/devmgr/v2
+volume_driver=cinder.volume.drivers.netapp.common.NetAppDriver
+netapp_controller_ips=
+netapp_volume_list=
+netapp_storage_family=ontap_cluster
+expiry_thres_minutes=720
+netapp_server_port=80
+netapp_partner_backend_name=
+netapp_eseries_host_type=linux_dm_mp
+thres_avl_size_perc_start=20
+volume_backend_name=tripleo_netapp
+netapp_copyoffload_tool_path=
+netapp_transport_type=http
+netapp_vserver=
+```
+
