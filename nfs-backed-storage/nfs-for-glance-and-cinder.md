@@ -78,3 +78,13 @@ Controller nodes will mount the NFS share on /var/lib/glance/images
 [root@overcloud-controller-0 ~]# mount | grep cinder
 198.18.53.10:/export/cinder on /var/lib/cinder/mnt/88057c09b2069b5354c25aa2a529a3c6 type nfs4 (rw,relatime,sync,vers=4.1,rsize=524288,wsize=524288,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=sys,clientaddr=198.18.53.30,local_lock=none,addr=198.18.53.10)
 ```
+```
+[stack@poc-undercloud ~]$ cinder service-list
++------------------+------------------------------------------------+------+---------+-------+----------------------------+-----------------+
+|      Binary      |                      Host                      | Zone |  Status | State |         Updated_at         | Disabled Reason |
++------------------+------------------------------------------------+------+---------+-------+----------------------------+-----------------+
+(...)
+|  cinder-volume   | overcloud-controller-0.localdomain@tripleo_nfs | nova | enabled |   up  | 2016-02-22T06:12:25.000000 |        -        |
++------------------+------------------------------------------------+------+---------+-------+----------------------------+-----------------+
+
+```
