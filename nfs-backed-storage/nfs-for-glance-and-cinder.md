@@ -88,3 +88,22 @@ Controller nodes will mount the NFS share on /var/lib/glance/images
 +------------------+------------------------------------------------+------+---------+-------+----------------------------+-----------------+
 
 ```
+
+```
+[root@overcloud-controller-0 ~]# cat /etc/cinder/shares-nfs.conf
+198.18.53.10:/export/cinder
+```
+
+```
+cat /etc/cinder/cinder.conf
+(...)
+enabled_backends=(...),tripleo_nfs
+(...)
+[tripleo_nfs]
+nfs_oversub_ratio=1.0
+volume_driver=cinder.volume.drivers.nfs.NfsDriver
+nfs_used_ratio=0.95
+nfs_shares_config=/etc/cinder/shares-nfs.conf
+nfs_mount_options=rw,sync
+volume_backend_name=tripleo_nfs
+```
