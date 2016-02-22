@@ -31,9 +31,48 @@ openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-temp
 ```
 Wait for the completion of the overcloud deployment process.
 
+### Resulting state of Cinder
+If we use only cinder-netapp-config.yaml as an environment file for TripleO, Cinder will end up with 2 enabled backends: iscsi and netapp.
+
 ### Resulting cinder.conf
 ```
+enabled_backends=tripleo_iscsi,tripleo_netapp
 (...)
+[tripleo_netapp]
+netapp_login=
+netapp_vfiler=
+netapp_password=
+nfs_shares_config=/etc/cinder/shares.conf
+netapp_storage_pools=
+host=hostgroup
+netapp_sa_password=
+netapp_server_hostname=
+netapp_size_multiplier=1.2
+thres_avl_size_perc_stop=60
+netapp_storage_protocol=nfs
+netapp_webservice_path=/devmgr/v2
+volume_driver=cinder.volume.drivers.netapp.common.NetAppDriver
+netapp_controller_ips=
+netapp_volume_list=
+netapp_storage_family=ontap_cluster
+expiry_thres_minutes=720
+netapp_server_port=80
+netapp_partner_backend_name=
+netapp_eseries_host_type=linux_dm_mp
+thres_avl_size_perc_start=20
+volume_backend_name=tripleo_netapp
+netapp_copyoffload_tool_path=
+netapp_transport_type=http
+netapp_vserver=
+
+[tripleo_iscsi]
+volume_driver=cinder.volume.drivers.lvm.LVMVolumeDriver
+volumes_dir=/var/lib/cinder/volumes
+iscsi_protocol=iscsi
+iscsi_ip_address=172.16.1.6
+volume_backend_name=tripleo_iscsi
+volume_group=cinder-volumes
+iscsi_helper=lioadm
 ```
 ### cinder service-list
 ```
