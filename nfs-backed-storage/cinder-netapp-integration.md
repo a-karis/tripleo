@@ -2,6 +2,7 @@
 
 ## Resources
 [1] http://docs.openstack.org/developer/tripleo-docs/advanced_deployment/cinder_netapp.html
+
 [2] outdated, for OSP6: http://netapp.github.io/openstack-deploy-ops-guide/kilo/content/cinder.configuration.html#d6e1206
 
 ## Configuration of NetApp cinder backend (standalone)
