@@ -76,7 +76,15 @@ iscsi_helper=lioadm
 ```
 ### cinder service-list
 ```
-(...)
+[stack@poc-undercloud ~]$ cinder service-list
++------------------+--------------------------------------------------+------+---------+-------+----------------------------+-----------------+
+|      Binary      |                       Host                       | Zone |  Status | State |         Updated_at         | Disabled Reason |
++------------------+--------------------------------------------------+------+---------+-------+----------------------------+-----------------+
+| cinder-scheduler |        overcloud-controller-0.localdomain        | nova | enabled |   up  | 2016-02-22T03:36:38.000000 |        -        |
+|  cinder-volume   |             hostgroup@tripleo_netapp             | nova | enabled |   up  | 2016-02-22T03:36:44.000000 |        -        |
+|  cinder-volume   | overcloud-controller-0.localdomain@tripleo_iscsi | nova | enabled |   up  | 2016-02-22T03:36:43.000000 |        -        |
++------------------+--------------------------------------------------+------+---------+-------+----------------------------+-----------------+
+
 ```
 
 ## Configuration of NetApp cinder backend (with additional Cinder NFS backend, with Nova NFS backend, with Glance NFS backend)
