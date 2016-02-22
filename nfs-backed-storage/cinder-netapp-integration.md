@@ -32,7 +32,13 @@ openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-temp
 Wait for the completion of the overcloud deployment process.
 
 ### Resulting cinder.conf
+```
 (...)
+```
+### cinder service-list
+```
+(...)
+```
 
 ## Configuration of NetApp cinder backend (with additional Cinder NFS backend, with Nova NFS backend, with Glance NFS backend)
 ### Instructions
@@ -41,6 +47,15 @@ Wait for the completion of the overcloud deployment process.
 - Run openstack overcloud deploy with all environment files:
 ```
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-netapp/network-environment.yaml  -e /home/stack/environment-netapp/compute-pre-deploy.yaml -e /home/stack/environment-netapp/storage-environment.yaml -e /home/stack/environment-netapp/cinder-netapp-config.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
+```
+
+### Resulting cinder.conf
+```
+(...)
+```
+### cinder service-list
+```
+(...)
 ```
 
 ## Configuration of NetApp cinder backend (without additional Cinder NFS backend, with Nova NFS backend, with Glance NFS backend)
@@ -85,6 +100,15 @@ parameters:
 - Run openstack overcloud deploy with all environment files:
 ```
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml -e /home/stack/environment-netapp/network-environment.yaml  -e /home/stack/environment-netapp/compute-pre-deploy.yaml -e /home/stack/environment-netapp/storage-environment.yaml -e /home/stack/environment-netapp/cinder-netapp-config.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
+```
+
+### Resulting cinder.conf
+```
+(...)
+```
+### cinder service-list
+```
+(...)
 ```
 
 ## How it works
