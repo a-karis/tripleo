@@ -1,4 +1,4 @@
-# 1) Variant 1
+# Variant 1
 ## Command
 ```
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml  -e /home/stack/environment-netapp/network-environment.yaml   --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
@@ -142,7 +142,7 @@ parameter_defaults:
        valid_lft forever preferred_lft forever
 ```
 
-# 2) Variant 2
+# Variant 2
 ## Command 
 ```
 openstack overcloud deploy --templates --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
@@ -223,7 +223,7 @@ parameter_defaults:
     inet6 fe80::5054:ff:feaf:cc4/64 scope link 
        valid_lft forever preferred_lft forever
 
-# 3) Variante 3
+# Variant 3
 ## Command
 ```
 openstack overcloud deploy --template -e /home/stack/environment-netapp/network-environment.yaml -e /home/stack/environment-netapp/storage-environment.yaml   --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
@@ -390,7 +390,7 @@ default via 198.18.53.10 dev br-ex
 198.18.53.0/24 dev vlan50  proto kernel  scope link  src 198.18.53.32
 ```
 
-4) Variant 4
+Variant 4
 ## Command
 
 ## /environment-netapp/network-environment.yaml
