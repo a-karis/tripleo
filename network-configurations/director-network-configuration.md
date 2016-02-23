@@ -2,6 +2,7 @@
 
 ## /environment-netapp/network-environment.yaml
 
+```
 resource_registry:
   OS::TripleO::BlockStorage::Net::SoftwareConfig: /usr/share/openstack-tripleo-heat-templates/network/config/single-nic-vlans/cinder-storage.yaml
   OS::TripleO::Compute::Net::SoftwareConfig: /usr/share/openstack-tripleo-heat-templates/network/config/single-nic-vlans/compute.yaml
@@ -23,6 +24,7 @@ parameter_defaults:
   DnsServers: ["8.8.8.8","8.8.4.4"]
   # Set to "br-ex" if using floating IPs on native VLAN on bridge br-ex
   NeutronExternalNetworkBridge: "''"
+```
 
 # 1) Variation 1
 ## Command
