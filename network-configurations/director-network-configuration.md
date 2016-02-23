@@ -26,7 +26,7 @@ parameter_defaults:
   NeutronExternalNetworkBridge: "''"
 ```
 
-# 1) Variation 1
+# 1) Variant 1
 ## Command
 ```
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml  -e /home/stack/environment-netapp/network-environment.yaml   --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
@@ -144,7 +144,7 @@ Deploying templates in the directory /usr/share/openstack-tripleo-heat-templates
        valid_lft forever preferred_lft forever
 ```
 
-# 2) Variation 2
+# 2) Variant 2
 ## Command 
 ```
 openstack overcloud deploy --templates --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
