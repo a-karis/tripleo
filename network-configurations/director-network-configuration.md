@@ -1,5 +1,7 @@
 # Custom templates
+
 ## /environment-netapp/network-environment.yaml
+
 resource_registry:
   OS::TripleO::BlockStorage::Net::SoftwareConfig: /usr/share/openstack-tripleo-heat-templates/network/config/single-nic-vlans/cinder-storage.yaml
   OS::TripleO::Compute::Net::SoftwareConfig: /usr/share/openstack-tripleo-heat-templates/network/config/single-nic-vlans/compute.yaml
@@ -22,7 +24,7 @@ parameter_defaults:
   # Set to "br-ex" if using floating IPs on native VLAN on bridge br-ex
   NeutronExternalNetworkBridge: "''"
 
-# 1)
+# 1) Variation 1
 ## Command
 ```
 openstack overcloud deploy --templates -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml  -e /home/stack/environment-netapp/network-environment.yaml   --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
@@ -140,7 +142,7 @@ Deploying templates in the directory /usr/share/openstack-tripleo-heat-templates
        valid_lft forever preferred_lft forever
 ```
 
-# 2)
+# 2) Variation 2
 ## Command 
 ```
 openstack overcloud deploy --templates --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
