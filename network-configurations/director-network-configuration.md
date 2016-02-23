@@ -184,6 +184,7 @@ parameter_defaults:
 +--------------------------------------+----------+-----------------------------------------------------+
 ```
 ## Controller
+```
 [heat-admin@overcloud-controller-0 ~]$ ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN 
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -203,8 +204,10 @@ parameter_defaults:
        valid_lft 82315sec preferred_lft 82315sec
     inet6 fe80::5054:ff:fe9c:683/64 scope link 
        valid_lft forever preferred_lft forever
+```
 
 ## Compute
+```
 [root@overcloud-compute-0 heat-config]# ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN 
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -222,6 +225,7 @@ parameter_defaults:
        valid_lft 82963sec preferred_lft 82963sec
     inet6 fe80::5054:ff:feaf:cc4/64 scope link 
        valid_lft forever preferred_lft forever
+```
 
 # Variant 3
 ## Command
