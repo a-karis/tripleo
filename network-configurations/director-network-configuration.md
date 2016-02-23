@@ -202,5 +202,140 @@ openstack overcloud deploy --templates --control-flavor control --compute-flavor
 # 3) Variante 3
 ## Command
 ```
-openstack overcloud deploy --templates  -e /home/stack/environment-netapp/network-environment.yaml   --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
+openstack overcloud deploy --template -e /home/stack/environment-netapp/network-environment.yaml -e /home/stack/environment-netapp/storage-environment.yaml   --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
+```
+
+## neutron
+```
+[stack@poc-undercloud ~]$ neutron net-list
++--------------------------------------+----------+-----------------------------------------------------+
+| id                                   | name     | subnets                                             |
++--------------------------------------+----------+-----------------------------------------------------+
+| ba433781-d3f5-4e78-b3f9-17affb5cc92b | ctlplane | 5694ef8e-10a2-413f-80e6-45dcf0f0a1b8 198.18.53.0/26 |
++--------------------------------------+----------+-----------------------------------------------------+
+```
+
+## Compute
+```
+[heat-admin@overcloud-controller-0 ~]$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: ens3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 52:54:00:45:fe:c4 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::5054:ff:fe45:fec4/64 scope link 
+       valid_lft forever preferred_lft forever
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ovs-system state UP qlen 1000
+    link/ether 52:54:00:9c:06:83 brd ff:ff:ff:ff:ff:ff
+4: ovs-system: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN 
+    link/ether 66:d3:df:92:d2:a7 brd ff:ff:ff:ff:ff:ff
+5: br-ex: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 52:54:00:9c:06:83 brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.30/24 brd 198.18.53.255 scope global br-ex
+       valid_lft forever preferred_lft forever
+    inet 198.18.53.28/32 brd 198.18.53.255 scope global br-ex
+       valid_lft forever preferred_lft forever
+    inet 198.18.53.29/32 brd 198.18.53.255 scope global br-ex
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe9c:683/64 scope link 
+       valid_lft forever preferred_lft forever
+6: vlan20: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 6a:3f:07:71:8d:e7 brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.30/24 brd 198.18.53.255 scope global vlan20
+       valid_lft forever preferred_lft forever
+    inet6 fe80::683f:7ff:fe71:8de7/64 scope link 
+       valid_lft forever preferred_lft forever
+7: vlan30: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 0e:61:23:93:72:d5 brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.30/24 brd 198.18.53.255 scope global vlan30
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c61:23ff:fe93:72d5/64 scope link 
+       valid_lft forever preferred_lft forever
+8: vlan100: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 5e:50:bb:3d:da:64 brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.30/24 brd 198.18.53.255 scope global vlan100
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5c50:bbff:fe3d:da64/64 scope link 
+       valid_lft forever preferred_lft forever
+9: vlan40: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether d2:79:3b:08:51:40 brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.30/24 brd 198.18.53.255 scope global vlan40
+       valid_lft forever preferred_lft forever
+    inet6 fe80::d079:3bff:fe08:5140/64 scope link 
+       valid_lft forever preferred_lft forever
+10: vlan50: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether fe:35:d3:4a:71:38 brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.30/24 brd 198.18.53.255 scope global vlan50
+       valid_lft forever preferred_lft forever
+    inet6 fe80::fc35:d3ff:fe4a:7138/64 scope link 
+       valid_lft forever preferred_lft forever
+11: br-int: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN 
+    link/ether f2:ba:b0:5c:2b:4a brd ff:ff:ff:ff:ff:ff
+12: br-tun: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN 
+    link/ether 8e:0f:2c:36:71:41 brd ff:ff:ff:ff:ff:ff
+[heat-admin@overcloud-controller-0 ~]$ ip r
+169.254.169.254 via 198.18.53.10 dev br-ex 
+198.18.53.0/24 dev br-ex  proto kernel  scope link  src 198.18.53.30 
+198.18.53.0/24 dev vlan20  proto kernel  scope link  src 198.18.53.30 
+198.18.53.0/24 dev vlan30  proto kernel  scope link  src 198.18.53.30 
+198.18.53.0/24 dev vlan100  proto kernel  scope link  src 198.18.53.30 
+198.18.53.0/24 dev vlan40  proto kernel  scope link  src 198.18.53.30 
+198.18.53.0/24 dev vlan50  proto kernel  scope link  src 198.18.53.30 
+```
+
+## Control
+```
+[heat-admin@overcloud-compute-0 ~]$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: ens3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 52:54:00:4f:b9:9b brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::5054:ff:fe4f:b99b/64 scope link 
+       valid_lft forever preferred_lft forever
+3: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ovs-system state UP qlen 1000
+    link/ether 52:54:00:af:0c:c4 brd ff:ff:ff:ff:ff:ff
+4: ovs-system: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN 
+    link/ether 5e:24:13:91:cb:3d brd ff:ff:ff:ff:ff:ff
+5: br-ex: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 52:54:00:af:0c:c4 brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.32/24 brd 198.18.53.255 scope global br-ex
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:feaf:cc4/64 scope link 
+       valid_lft forever preferred_lft forever
+6: vlan20: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 26:c9:46:4f:fd:13 brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.32/24 brd 198.18.53.255 scope global vlan20
+       valid_lft forever preferred_lft forever
+    inet6 fe80::24c9:46ff:fe4f:fd13/64 scope link 
+       valid_lft forever preferred_lft forever
+7: vlan30: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 72:60:fe:3b:9d:be brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.32/24 brd 198.18.53.255 scope global vlan30
+       valid_lft forever preferred_lft forever
+    inet6 fe80::7060:feff:fe3b:9dbe/64 scope link 
+       valid_lft forever preferred_lft forever
+8: vlan50: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether ca:e4:32:4c:70:ed brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.32/24 brd 198.18.53.255 scope global vlan50
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c8e4:32ff:fe4c:70ed/64 scope link 
+       valid_lft forever preferred_lft forever
+9: br-int: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN 
+    link/ether ce:c2:54:74:78:46 brd ff:ff:ff:ff:ff:ff
+10: br-tun: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN 
+    link/ether 32:73:1c:d5:32:4a brd ff:ff:ff:ff:ff:ff
+[heat-admin@overcloud-compute-0 ~]$ ip r
+default via 198.18.53.10 dev br-ex 
+169.254.169.254 via 198.18.53.10 dev br-ex 
+198.18.53.0/24 dev br-ex  proto kernel  scope link  src 198.18.53.32 
+198.18.53.0/24 dev vlan20  proto kernel  scope link  src 198.18.53.32 
+198.18.53.0/24 dev vlan30  proto kernel  scope link  src 198.18.53.32 
+198.18.53.0/24 dev vlan50  proto kernel  scope link  src 198.18.53.32
 ```
