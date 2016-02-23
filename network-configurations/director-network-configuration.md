@@ -198,3 +198,9 @@ openstack overcloud deploy --templates --control-flavor control --compute-flavor
        valid_lft 82963sec preferred_lft 82963sec
     inet6 fe80::5054:ff:feaf:cc4/64 scope link 
        valid_lft forever preferred_lft forever
+
+# 3) Variante 3
+## Command
+```
+openstack overcloud deploy --templates  -e /home/stack/environment-netapp/network-environment.yaml   --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
+```
