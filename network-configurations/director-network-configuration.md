@@ -686,7 +686,70 @@ outputs:
 ```
 
 ## Neutron
+```
+[stack@poc-undercloud ~]$ neutron net-list
++--------------------------------------+--------------+-----------------------------------------------------+
+| id                                   | name         | subnets                                             |
++--------------------------------------+--------------+-----------------------------------------------------+
+| 2c4871ce-ca83-4bc8-9b54-a1b48bb58f51 | external     | b74841d7-3972-41d8-b9b0-b50fef5d9fe9 10.1.1.0/24    |
+| 2edc6eb7-2aac-45ea-aa65-85017dc4a2a3 | tenant       | 1c14e90c-d091-4e37-94c4-fca19b6c0feb 172.16.0.0/24  |
+| 6c124bbc-bb66-4a8b-91bb-d9bfaff31eeb | internal_api | 038b3c23-b586-4179-b8af-5263eb998ebe 172.16.2.0/24  |
+| 741b62c2-ee90-4ad1-b443-03af3521e8f7 | storage      | 9db67503-9624-4eb4-b627-3318abdcfda8 172.16.1.0/24  |
+| ba433781-d3f5-4e78-b3f9-17affb5cc92b | ctlplane     | 5694ef8e-10a2-413f-80e6-45dcf0f0a1b8 198.18.53.0/26 |
+| f9501c1c-813b-46a4-a5e3-87a5e73719cf | storage_mgmt | 8431bfd0-2d23-47d5-a4d9-c170eda6222d 172.16.3.0/24  |
++--------------------------------------+--------------+-----------------------------------------------------+
+```
 
 ## Controller
+```
+[heat-admin@overcloud-controller-0 ~]$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: ens3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ovs-system state UP qlen 1000
+    link/ether 52:54:00:45:fe:c4 brd ff:ff:ff:ff:ff:ff
+    inet 10.1.1.3/24 brd 10.1.1.255 scope global ens3
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe45:fec4/64 scope link 
+       valid_lft forever preferred_lft forever
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master ovs-system state UP qlen 1000
+    link/ether 52:54:00:9c:06:83 brd ff:ff:ff:ff:ff:ff
+4: ovs-system: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN 
+    link/ether c6:23:fc:a8:92:05 brd ff:ff:ff:ff:ff:ff
+5: br-ex: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 52:54:00:9c:06:83 brd ff:ff:ff:ff:ff:ff
+    inet 198.18.53.35/24 brd 198.18.53.255 scope global br-ex
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe9c:683/64 scope link 
+       valid_lft forever preferred_lft forever
+6: vlan20: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 56:6b:cd:17:51:c7 brd ff:ff:ff:ff:ff:ff
+    inet 172.16.2.7/24 brd 172.16.2.255 scope global vlan20
+       valid_lft forever preferred_lft forever
+    inet6 fe80::546b:cdff:fe17:51c7/64 scope link 
+       valid_lft forever preferred_lft forever
+7: vlan30: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 12:1b:68:03:bc:c5 brd ff:ff:ff:ff:ff:ff
+    inet 172.16.1.6/24 brd 172.16.1.255 scope global vlan30
+       valid_lft forever preferred_lft forever
+    inet6 fe80::101b:68ff:fe03:bcc5/64 scope link 
+       valid_lft forever preferred_lft forever
+8: vlan40: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether 06:16:44:26:8c:d4 brd ff:ff:ff:ff:ff:ff
+    inet 172.16.3.5/24 brd 172.16.3.255 scope global vlan40
+       valid_lft forever preferred_lft forever
+    inet6 fe80::416:44ff:fe26:8cd4/64 scope link 
+       valid_lft forever preferred_lft forever
+9: vlan50: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN 
+    link/ether e6:41:2e:e6:fc:9d brd ff:ff:ff:ff:ff:ff
+    inet 172.16.0.5/24 brd 172.16.0.255 scope global vlan50
+       valid_lft forever preferred_lft forever
+    inet6 fe80::e441:2eff:fee6:fc9d/64 scope link 
+       valid_lft forever preferred_lft forever
+```
 
 ## Compute
+
