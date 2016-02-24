@@ -396,6 +396,9 @@ default via 198.18.53.10 dev br-ex
 
 # Variant 4
 ## Command
+```
+openstack overcloud deploy --templates -e /home/stack/environment-basic-network-scenario/network-environment.yaml -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
+```
 
 ## /environment-netapp/network-environment.yaml
 
@@ -752,4 +755,6 @@ outputs:
 ```
 
 ## Compute
+```
 
+```
