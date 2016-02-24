@@ -632,9 +632,12 @@ outputs:
 ## Compute
 (irrelevant, the same as in the normal network isolation example)
 
-# Variant 5 - collapsing certain networks into the provisioning network
+# Variant 5 - collapsing certain networks into the provisioning network, e.g. storage
 
 ## Deployment command
+```
+openstack overcloud deploy --templates -e /home/stack/environment-basic-network-scenario/network-environment.yaml -e /home/stack/environment-basic-network-scenario/network-isolation-without-storage.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
+```
 
 ## Neutron
 
