@@ -634,13 +634,320 @@ outputs:
 
 # Variant 5 - collapsing certain networks into the provisioning network, e.g. storage
 
+## Configuration
+```
+[root@poc-undercloud ironic]# cat /home/stack/templates-basic-network-scenario/single-nic-vlans/
+# Enable the creation of Neutron networks for isolated Overcloud
+# traffic and configure each role to assign ports (related
+# to that role) on these networks.
+resource_registry:
+  OS::TripleO::Network::External: /usr/share/openstack-tripleo-heat-templates/network/external.yaml
+  OS::TripleO::Network::InternalApi: /usr/share/openstack-tripleo-heat-templates/network/internal_api.yaml
+#  OS::TripleO::Network::StorageMgmt: /usr/share/openstack-tripleo-heat-templates/network/storage_mgmt.yaml
+#  OS::TripleO::Network::Storage: /usr/share/openstack-tripleo-heat-templates/network/storage.yaml
+  OS::TripleO::Network::Tenant: /usr/share/openstack-tripleo-heat-templates/network/tenant.yaml
+
+  # Port assignments for the VIPs
+  OS::TripleO::Network::Ports::ExternalVipPort: /usr/share/openstack-tripleo-heat-templates/network/ports/external.yaml
+  OS::TripleO::Network::Ports::InternalApiVipPort: /usr/share/openstack-tripleo-heat-templates/network/ports/internal_api.yaml
+#  OS::TripleO::Network::Ports::StorageVipPort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage.yaml
+#  OS::TripleO::Network::Ports::StorageMgmtVipPort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage_mgmt.yaml
+  OS::TripleO::Network::Ports::TenantVipPort: /usr/share/openstack-tripleo-heat-templates/network/ports/tenant.yaml
+  OS::TripleO::Network::Ports::RedisVipPort: /usr/share/openstack-tripleo-heat-templates/network/ports/vip.yaml
+
+  # Port assignments for the controller role
+  OS::TripleO::Controller::Ports::ExternalPort: /usr/share/openstack-tripleo-heat-templates/network/ports/external.yaml
+  OS::TripleO::Controller::Ports::InternalApiPort: /usr/share/openstack-tripleo-heat-templates/network/ports/internal_api.yaml
+#  OS::TripleO::Controller::Ports::StoragePort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage.yaml
+#  OS::TripleO::Controller::Ports::StorageMgmtPort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage_mgmt.yaml
+  OS::TripleO::Controller::Ports::TenantPort: /usr/share/openstack-tripleo-heat-templates/network/ports/tenant.yaml
+
+  # Port assignments for the compute role
+  OS::TripleO::Compute::Ports::InternalApiPort: /usr/share/openstack-tripleo-heat-templates/network/ports/internal_api.yaml
+#  OS::TripleO::Compute::Ports::StoragePort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage.yaml
+  OS::TripleO::Compute::Ports::TenantPort: /usr/share/openstack-tripleo-heat-templates/network/ports/tenant.yaml
+
+  # Port assignments for the ceph storage role
+#  OS::TripleO::CephStorage::Ports::StoragePort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage.yaml
+#  OS::TripleO::CephStorage::Ports::StorageMgmtPort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage_mgmt.yaml
+
+  # Port assignments for the swift storage role
+  OS::TripleO::SwiftStorage::Ports::InternalApiPort: /usr/share/openstack-tripleo-heat-templates/network/ports/internal_api.yaml
+#  OS::TripleO::SwiftStorage::Ports::StoragePort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage.yaml
+#  OS::TripleO::SwiftStorage::Ports::StorageMgmtPort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage_mgmt.yaml
+
+  # Port assignments for the block storage role
+  OS::TripleO::BlockStorage::Ports::InternalApiPort: /usr/share/openstack-tripleo-heat-templates/network/ports/internal_api.yaml
+#  OS::TripleO::BlockStorage::Ports::StoragePort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage.yaml
+#  OS::TripleO::BlockStorage::Ports::StorageMgmtPort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage_mgmt.yaml
+```
+
+```
+[root@poc-undercloud ironic]# cat /home/stack/templates-basic-network-scenario/single-nic-vlans/compute.yaml 
+heat_template_version: 2015-04-30
+
+description: >
+  Software Config to drive os-net-config to configure VLANs for the
+  compute role.
+
+parameters:
+  ControlPlaneIp:
+    default: ''
+    description: IP address/subnet on the ctlplane network
+    type: string
+  ExternalIpSubnet:
+    default: ''
+    description: IP address/subnet on the external network
+    type: string
+  InternalApiIpSubnet:
+    default: ''
+    description: IP address/subnet on the internal API network
+    type: string
+  StorageIpSubnet:
+    default: ''
+    description: IP address/subnet on the storage network
+    type: string
+  StorageMgmtIpSubnet:
+    default: ''
+    description: IP address/subnet on the storage mgmt network
+    type: string
+  TenantIpSubnet:
+    default: ''
+    description: IP address/subnet on the tenant network
+    type: string
+  InternalApiNetworkVlanID:
+    default: 20
+    description: Vlan ID for the internal_api network traffic.
+    type: number
+  StorageNetworkVlanID:
+    default: 30
+    description: Vlan ID for the storage network traffic.
+    type: number
+  TenantNetworkVlanID:
+    default: 50
+    description: Vlan ID for the tenant network traffic.
+    type: number
+  ControlPlaneSubnetCidr: # Override this via parameter_defaults
+    default: '24'
+    description: The subnet CIDR of the control plane network.
+    type: string
+  ControlPlaneDefaultRoute: # Override this via parameter_defaults
+    description: The subnet CIDR of the control plane network.
+    type: string
+  DnsServers: # Override this via parameter_defaults
+    default: []
+    description: A list of DNS servers (2 max for some implementations) that will be added to resolv.conf.
+    type: json
+  EC2MetadataIp: # Override this via parameter_defaults
+    description: The IP address of the EC2 metadata server.
+    type: string
+
+resources:
+  OsNetConfigImpl:
+    type: OS::Heat::StructuredConfig
+    properties:
+      group: os-apply-config
+      config:
+        os_net_config:
+          network_config:
+            -
+              type: ovs_bridge
+              name: {get_input: bridge_name}
+              use_dhcp: false
+              dns_servers: {get_param: DnsServers}
+              addresses:
+                -
+                  ip_netmask:
+                    list_join:
+                      - '/'
+                      - - {get_param: ControlPlaneIp}
+                        - {get_param: ControlPlaneSubnetCidr}
+              routes:
+                -
+                  ip_netmask: 169.254.169.254/32
+                  next_hop: {get_param: EC2MetadataIp}
+                -
+                  default: true
+                  next_hop: {get_param: ControlPlaneDefaultRoute}
+              members:
+                -
+                  type: interface
+                  name: nic1
+                  # force the MAC address of the bridge to this interface
+                  primary: true
+                -
+                  type: vlan
+                  vlan_id: {get_param: InternalApiNetworkVlanID}
+                  addresses:
+                  -
+                    ip_netmask: {get_param: InternalApiIpSubnet}
+#                -
+#                  type: vlan
+#                  vlan_id: {get_param: StorageNetworkVlanID}
+#                  addresses:
+#                  -
+#                    ip_netmask: {get_param: StorageIpSubnet}
+                -
+                  type: vlan
+                  vlan_id: {get_param: TenantNetworkVlanID}
+                  addresses:
+                  -
+                    ip_netmask: {get_param: TenantIpSubnet}
+```
+
+```
+[root@poc-undercloud ironic]# cat /home/stack/templates-basic-network-scenario/single-nic-vlans/controller.yaml 
+heat_template_version: 2015-04-30
+
+description: >
+  Software Config to drive os-net-config to configure VLANs for the
+  controller role.
+
+parameters:
+  ControlPlaneIp:
+    default: ''
+    description: IP address/subnet on the ctlplane network
+    type: string
+  ExternalIpSubnet:
+    default: ''
+    description: IP address/subnet on the external network
+    type: string
+  InternalApiIpSubnet:
+    default: ''
+    description: IP address/subnet on the internal API network
+    type: string
+  StorageIpSubnet:
+    default: ''
+    description: IP address/subnet on the storage network
+    type: string
+  StorageMgmtIpSubnet:
+    default: ''
+    description: IP address/subnet on the storage mgmt network
+    type: string
+  TenantIpSubnet:
+    default: ''
+    description: IP address/subnet on the tenant network
+    type: string
+  ExternalNetworkVlanID:
+    default: 10
+    description: Vlan ID for the external network traffic.
+    type: number
+  InternalApiNetworkVlanID:
+    default: 20
+    description: Vlan ID for the internal_api network traffic.
+    type: number
+  StorageNetworkVlanID:
+    default: 30
+    description: Vlan ID for the storage network traffic.
+    type: number
+  StorageMgmtNetworkVlanID:
+    default: 40
+    description: Vlan ID for the storage mgmt network traffic.
+    type: number
+  TenantNetworkVlanID:
+    default: 50
+    description: Vlan ID for the tenant network traffic.
+    type: number
+  ExternalInterfaceDefaultRoute:
+    default: '10.0.0.1'
+    description: default route for the external network
+    type: string
+  ControlPlaneSubnetCidr: # Override this via parameter_defaults
+    default: '24'
+    description: The subnet CIDR of the control plane network.
+    type: string
+  DnsServers: # Override this via parameter_defaults
+    default: []
+    description: A list of DNS servers (2 max for some implementations) that will be added to resolv.conf.
+    type: json
+  EC2MetadataIp: # Override this via parameter_defaults
+    description: The IP address of the EC2 metadata server.
+    type: string
+
+resources:
+  OsNetConfigImpl:
+    type: OS::Heat::StructuredConfig
+    properties:
+      group: os-apply-config
+      config:
+        os_net_config:
+          network_config:
+            -
+              type: ovs_bridge
+              name: {get_input: bridge_name}
+              use_dhcp: false
+              dns_servers: {get_param: DnsServers}
+              addresses:
+                -
+                  ip_netmask:
+                    list_join:
+                      - '/'
+                      - - {get_param: ControlPlaneIp}
+                        - {get_param: ControlPlaneSubnetCidr}
+              routes:
+                -
+                  ip_netmask: 169.254.169.254/32
+                  next_hop: {get_param: EC2MetadataIp}
+              members:
+                -
+                  type: interface
+                  name: nic1
+                  # force the MAC address of the bridge to this interface
+                  primary: true
+                -
+                  type: vlan
+                  vlan_id: {get_param: InternalApiNetworkVlanID}
+                  addresses:
+                  -
+                    ip_netmask: {get_param: InternalApiIpSubnet}
+#                -
+#                  type: vlan
+#                  vlan_id: {get_param: StorageNetworkVlanID}
+#                  addresses:
+#                  -
+#                    ip_netmask: {get_param: StorageIpSubnet}
+#                -
+#                  type: vlan
+#                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
+#                  addresses:
+#                  -
+#                    ip_netmask: {get_param: StorageMgmtIpSubnet}
+                -
+                  type: vlan
+                  vlan_id: {get_param: TenantNetworkVlanID}
+                  addresses:
+                  -
+                    ip_netmask: {get_param: TenantIpSubnet}
+                - type: interface
+                  name: nic2
+                  addresses:
+                  - ip_netmask: {get_param: ExternalIpSubnet}
+                  routes:
+                  - ip_netmask: 0.0.0.0/0
+                    next_hop: {get_param: ExternalInterfaceDefaultRoute}
+outputs:
+  OS::stack_id:
+    description: The OsNetConfigImpl resource.
+    value: {get_resource: OsNetConfigImpl}
+```
+
 ## Deployment command
 ```
 openstack overcloud deploy --templates -e /home/stack/environment-basic-network-scenario/network-environment.yaml -e /home/stack/environment-basic-network-scenario/network-isolation-without-storage.yaml  --control-flavor control --compute-flavor compute --ntp-server pool.ntp.org --neutron-network-type vxlan --neutron-tunnel-types vxlan --control-scale 1 --compute-scale 1
 ```
 
 ## Neutron
-
+```
+[root@poc-undercloud ironic]# neutron net-list
++--------------------------------------+--------------+-----------------------------------------------------+
+| id                                   | name         | subnets                                             |
++--------------------------------------+--------------+-----------------------------------------------------+
+| 8710e6bd-f0de-4fcc-b742-fb2b560ba07c | tenant       | b6fd76eb-10d9-4a67-8ed3-48726317160c 172.16.0.0/24  |
+| 83456963-ba08-444c-adf2-c509b3fd4566 | external     | 289eb600-a604-443c-b507-3a88116962b9 10.1.1.0/24    |
+| 81be8c61-58fd-4841-9ff9-dd9ea1ec5035 | internal_api | 3ef1d2c9-265a-4504-b0f8-32205f178b35 172.16.2.0/24  |
+| ba433781-d3f5-4e78-b3f9-17affb5cc92b | ctlplane     | 5694ef8e-10a2-413f-80e6-45dcf0f0a1b8 198.18.53.0/26 |
++--------------------------------------+--------------+-----------------------------------------------------+
+```
 ## Controller
 
 ## Compute
